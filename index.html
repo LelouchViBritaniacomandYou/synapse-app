@@ -467,7 +467,7 @@ function onb(i){var o=$("onb");if(i>=ONB.length){if(o)o.remove();LS("syn_onb5","
  $("onx").onclick=function(){tap("sel");onb(i+1);};$("ons").onclick=function(){onb(99);};}
 /* видео в ключевые моменты */
 function playFx(name,done){var fin=function(){if(done){var f=done;done=null;f();}};if(RM||$("fxv")){fin();return;}
- var o=document.createElement("div");o.id="fxv";o.innerHTML="<video src='assets/"+name+".mp4' muted autoplay playsinline preload='auto'></video>";document.body.appendChild(o);
+ var o=document.createElement("div");o.id="fxv";o.innerHTML="<video src='"+name+".mp4' muted autoplay playsinline preload='auto'></video>";document.body.appendChild(o);
  var v=o.querySelector("video"),tm=setTimeout(close,3600);function close(){clearTimeout(tm);if(!o.parentNode)return;o.classList.add("out");setTimeout(function(){o.remove();fin();},260);}
  v.addEventListener("ended",close);v.addEventListener("error",close);o.addEventListener("click",close);try{var p=v.play();if(p&&p.catch)p.catch(function(){});}catch(e){}}
 /* глубина фона: наклон + скролл, только transform */
