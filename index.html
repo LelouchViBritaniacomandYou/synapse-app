@@ -161,6 +161,18 @@ html.gold #nav{border-color:rgba(255,207,90,.35)}
 html.min *,html.min *:before,html.min *:after{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}
 @media (prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}}
 @media (max-width:370px){h1{font-size:25px}.big{font-size:44px}.scr{padding-left:12px;padding-right:12px}.mid{font-size:19px}}
+
+html.light{--bg:#f4f6ff;--c1:#ffffff;--tx:#0d1020;--mut:#4a5275;--dim:#8a91ad;--cy:#0098b8;--mg:#d0119f;--vi:#6a3df0;--gd:#b07a00}
+html.light body,html.light #app{background:var(--bg);color:var(--tx)}
+html.light #bgx{opacity:.25}
+.skel{display:block;height:10px;border-radius:6px;margin:8px 0;background:linear-gradient(90deg,rgba(25,240,255,.08),rgba(255,43,214,.22),rgba(25,240,255,.08));background-size:200% 100%;animation:sk 1.2s linear infinite}
+.skel.w2{width:72%}.skel.w3{width:46%}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+pre{position:relative}pre .kw{color:var(--mg)}pre .st{color:var(--ok)}pre .cm{color:var(--dim);font-style:italic}pre .nu{color:var(--gd)}
+.mx{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-style:italic;white-space:nowrap}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.86em;margin:0 2px}.fr>span:first-child{border-bottom:1px solid currentColor;padding:0 2px}
+.offl{text-align:center;padding:28px 18px}.offl .z{font-size:46px;line-height:1}
+.sv{font-size:12px;color:var(--cy);background:none;border:1px solid rgba(25,240,255,.35);border-radius:10px;padding:3px 8px;margin-top:8px}
 </style>
 </head>
 <body>
@@ -170,9 +182,9 @@ html.min *,html.min *:before,html.min *:after{animation-duration:.001s!important
  <main id="main"></main>
 </div>
 <nav id="nav">
- <button data-tab="home"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Ядро</button>
  <button data-tab="chat"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Чат</button>
- <button data-tab="loot"><svg viewBox="0 0 24 24"><path d="M3 8h18v4H3zM5 12v9h14v-9M12 8v13M12 8c-2-4-6-4-6-1s6 1 6 1zm0 0c2-4 6-4 6-1s-6 1-6 1z"/></svg>Лут</button>
+ <button data-tab="prog"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Прогресс</button>
+ <button data-tab="ref"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21c.8-4 3.5-6 7-6s6.2 2 7 6M16 4a4 4 0 0 1 0 8M22 21c-.5-3-2-5-4-5.6"/></svg>Друзья</button>
  <button data-tab="me"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>Профиль</button>
 </nav>
 <div id="ov"></div>
@@ -264,8 +276,8 @@ var ACH=buildACH();
 function achState(){ACH=buildACH();return ACH.map(function(a){var p=a[5]();return{a:a,c:Math.min(p[0],p[1]),g:p[1],on:!!a[6]||p[0]>=p[1]}})}
 function checkAch(){var on=achState().filter(function(s){return s.on}).map(function(s){return s.a[0]}),got=J("syn_ach",null);JS("syn_ach",on);if(!got)return;
  var nw=on.filter(function(i){return got.indexOf(i)<0});nw.slice(0,2).forEach(function(id,k){var a=ACH.filter(function(x){return x[0]===id})[0];if(!a)return;setTimeout(function(){toast(a[1]+" Ачивка: "+a[2]);tap("good");beep(1)},600+k*2400)})}
-var ORDER=["home","chat","loot","me"],NAV={home:"home",chat:"chat",loot:"loot",ach:"loot",wheel:"loot",me:"me",prem:"me",set:"me",ref:"me",mem:"me"},PARENT={ach:"loot",wheel:"loot",prem:"me",set:"me",ref:"me",mem:"me"};
-var scr="home",V={},B={};
+var ORDER=["chat","prog","ref","me"],NAV={chat:"chat",prog:"prog",home:"prog",loot:"prog",ach:"prog",wheel:"prog",ref:"ref",me:"me",prem:"me",set:"me",mem:"me",hist:"me",notes:"me"},PARENT={ach:"prog",wheel:"prog",prem:"me",set:"me",mem:"me",hist:"me",notes:"me"};
+var scr="chat",V={},B={};
 function setTab(t,dir){if(!V[t])return;var a=ORDER.indexOf(NAV[t]),b=ORDER.indexOf(NAV[scr]);if(dir==null)dir=a===b?(PARENT[t]?1:-1):a-b;scr=t;tap("sel");render(dir)}
 function render(dir){var pl=$("plan");pl.textContent=prem()?"PREMIUM":data.p==="trial"?"TRIAL":"FREE";pl.className="plan"+(prem()?" pr":"");
  document.documentElement.classList.toggle("gold",prem());
@@ -294,19 +306,36 @@ V.home=function(){var s=st(),sd=data.sd||[],h="";
  for(var i=0;i<7;i++)h+="<i class='"+(sd[i]?"on ":"")+(i===6?"td":"")+"'>"+wdAgo(6-i)+"</i>";
  h+="</div>"+(data.nc?"<p class='mut sm' style='margin-top:10px'>🎁 Сундук на "+esc(data.nc)+"-й день серии</p>":"")+"</div>";
  h+="<div class='box'><div class='row'><div class='lab cy'>вопрос дня</div>"+(qodDone()?"<span class='lab' style='margin-left:auto;color:var(--ok)'>разобран ✓</span>":"")+"</div><div class='qod'>"+esc(qod())+"</div><button class='btn' id='qodb'>"+ic("bulb")+(qodDone()?"Спросить ещё":"Разобрать с Ядром")+"</button></div>";
- h+="<div class='g2' style='margin-top:12px'><div class='stat'><div class='lab cy'>⚡ сегодня</div><b>"+(prem()?"до 200":left()+" / "+lim())+"</b><div class='mut sm'>"+(prem()?"Premium":"новые через "+mskLeft())+"</div></div><div class='stat'><div class='lab'>ранг</div><b style='font-size:15px'>"+esc(data.rk||"🌀 Контур")+"</b>"+(data.xn?"<div class='mut sm'>"+esc(data.xn[0])+" XP до "+esc(data.xn[1])+"</div>":"")+"</div></div>";
+ h+="<div class='g2' style='margin-top:12px'><div class='stat'><div class='lab cy'>⚡ сегодня</div><b>"+(prem()?"до 200":left()+" / "+lim())+"</b><div class='mut sm'>"+(prem()?"Premium":"новые через "+mskLeft())+"</div></div><div class='stat'><div class='lab'>ранг</div><b style='font-size:15px'>"+esc(data.rk||"🌀 Отличник")+"</b>"+(data.xn?"<div class='mut sm'>"+esc(data.xn[0])+" XP до "+esc(data.xn[1])+"</div>":"")+"</div></div>";
  if(empty()&&!prem())h+="<div class='box gd'><div class='lab gd'>⚡ на сегодня всё</div><p class='sm' style='margin:6px 0 12px'>Новые в 00:00 МСК. В Premium — до 200 в день.</p><button class='btn gd' data-go='prem'>"+ic("gem")+"Что даёт Premium</button></div>";
  return"<div class='scr'>"+h+"</div>"};
 B.home=function(){$("qodb").onclick=function(){openAsk(qod())}};
+V.prog=function(){var a=V.home(),b=V.loot();return a.slice(0,a.length-6)+"<div style='height:18px'></div>"+b.slice("<div class='scr'>".length)};
+B.prog=function(){if(B.home)B.home();if(B.loot)B.loot()};
 /* CHAT */
 var thread=J("syn_thread",[]);if(!Array.isArray(thread))thread=[];
 var thinking=false,STRM="",prefill="",histDone=false;
 function save(){JS("syn_thread",thread.slice(-40).map(function(m){var o={};for(var k in m)if(k!=="img")o[k]=m[k];if(m.img&&!o.t)o.t="📷 фото";return o}))}
 function openAsk(t){prefill=t||"";setTab("chat")}
+var KW=/\b(def|return|if|elif|else|for|while|in|import|from|class|try|except|finally|with|as|lambda|yield|async|await|function|var|let|const|new|this|true|false|null|None|True|False|print|int|str|float|public|static|void|include|using|namespace|std|cout|cin|SELECT|FROM|WHERE|INSERT|UPDATE|DELETE|JOIN)\b/g;
+function hl(c){var out="",re=/(#[^\n]*|\/\/[^\n]*|--[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|(\b\d+(?:\.\d+)?\b)/g,last=0,m;
+ function kw(x){return esc(x).replace(KW,"<span class='kw'>$1</span>")}
+ while((m=re.exec(c))){out+=kw(c.slice(last,m.index));out+="<span class='"+(m[1]?"cm":m[2]?"st":"nu")+"'>"+esc(m[0])+"</span>";last=re.lastIndex}
+ return out+kw(c.slice(last))}
+var SUP={"0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹","n":"ⁿ","+":"⁺","-":"⁻","x":"ˣ"},SUB={"0":"₀","1":"₁","2":"₂","3":"₃","4":"₄","5":"₅","6":"₆","7":"₇","8":"₈","9":"₉"};
+var TEX={"\\cdot":"·","\\times":"×","\\div":"÷","\\le":"≤","\\leq":"≤","\\ge":"≥","\\geq":"≥","\\ne":"≠","\\neq":"≠","\\pm":"±","\\infty":"\u221e","\\pi":"π","\\alpha":"α","\\beta":"β","\\gamma":"γ","\\Delta":"Δ","\\delta":"δ","\\lambda":"λ","\\mu":"μ","\\sigma":"σ","\\omega":"ω","\\theta":"θ","\\approx":"≈","\\to":"→","\\Rightarrow":"⇒","\\in":"∈","\\sum":"∑","\\int":"∫","\\angle":"∠","\\circ":"°","\\degree":"°","\\left":"","\\right":"","\\,":" ","\\;":" ","\\!":""};
+function mathx(s){if(!/[\\^_$]|sqrt/.test(s))return s;
+ s=s.replace(/\$\$?([^$]{1,200})\$\$?/g,function(_,m){return"<span class='mx'>"+mathx(m)+"</span>"});
+ s=s.replace(/\\(d|t)?frac\{([^{}]{1,40})\}\{([^{}]{1,40})\}/g,function(_,x,a,b){return"<span class='fr'><span>"+a+"</span><span>"+b+"</span></span>"});
+ s=s.replace(/\\sqrt\{([^{}]{1,40})\}/g,"√($1)").replace(/\bsqrt\(([^()]{1,40})\)/g,"√($1)");
+ s=s.replace(/\\[A-Za-z]+|\\[,;!]/g,function(k){return TEX.hasOwnProperty(k)?TEX[k]:k});
+ s=s.replace(/\^\{([0-9n+\-x]{1,4})\}|\^([0-9n]{1,3})/g,function(_,a,b){return(a||b).split("").map(function(c){return SUP[c]||c}).join("")});
+ s=s.replace(/_\{([0-9]{1,3})\}|_([0-9])(?![0-9])/g,function(_,a,b){return(a||b).split("").map(function(c){return SUB[c]||c}).join("")});
+ return s.replace(/[{}]/g,"")}
 function md(t){t=String(t||"").replace(/\r/g,"");var keep=[];
- t=t.replace(/```[a-zA-Z0-9]*\n?([\s\S]*?)```/g,function(_,c){keep.push("<pre>"+esc(c.replace(/\n$/,""))+"</pre>");return"\n\u0001"+(keep.length-1)+"\u0001\n"});
+ t=t.replace(/```[a-zA-Z0-9]*\n?([\s\S]*?)```/g,function(_,c){keep.push("<pre>"+hl(c.replace(/\n$/,""))+"</pre>");return"\n\u0001"+(keep.length-1)+"\u0001\n"});
  var out=[],list=null;
- function inl(s){return esc(s).replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>")}
+ function inl(s){return mathx(esc(s)).replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>")}
  function close(){if(list){out.push("</"+list+">");list=null}}
  t.split("\n").forEach(function(l){var m,tr=l.trim();if(/^\u0001\d+\u0001$/.test(tr)){close();out.push(keep[Number(tr.slice(1,-1))]);return}
   if(m=l.match(/^\s*[-•*]\s+(.*)/)){if(list!=="ul"){close();out.push("<ul>");list="ul"}out.push("<li>"+inl(m[1])+"</li>");return}
@@ -317,15 +346,15 @@ function tm(ts){if(!ts)return"";var d=new Date(ts+108e5);return("0"+d.getUTCHour
 function msgHTML(m){if(m.me)return"<div class='m me'>"+(m.img&&/^data:image\//.test(m.img)?"<img src='"+m.img+"' alt=''>":"")+(m.vo?"🎙 голосовое · "+esc(m.vo):esc(m.t||""))+"<div class='tm'>"+tm(m.ts)+"</div></div>";
  var b="";if(m.steps||m.answer||m.check){if(m.steps)b+="<div class='k'>шаги</div>"+md(m.steps);if(m.answer)b+="<div class='k mg'>ответ</div>"+md(m.answer);if(m.check)b+="<div class='k gd'>проверка</div>"+md(m.check)}else b=md(m.t);
  return"<div class='m ai"+(m.note?" note":"")+"'>"+b+"</div>"}
-function logHTML(){var h=thread.length?thread.map(msgHTML).join(""):"<div class='empty'><div class='lab cy'>"+(netOK()?"ядро на связи":"ядро ждёт")+"</div><div class='h' style='margin-top:8px'>Пиши — разложу<br>по шагам</div><p class='mut sm' style='margin-top:8px'>"+(netOK()?"Задача, фото тетради или голосом.":inside&&API?"Подключаюсь к Ядру…":"Ядро сейчас вне приложения — вопрос отправлю в бот.")+"</p></div>";
- return h+(thinking?"<div class='m ai' id='strm'>"+(STRM?md(STRM):"<div class='typing'><i></i><i></i><i></i><span>Ядро думает…</span></div>")+"</div>":"")}
+function logHTML(){if(!thread.length&&NET.st==="off"&&!thinking)return"<div class='offl'><div class='z'>😴</div><div class='h' style='margin-top:10px'>Ядро спит</div><p class='mut sm' style='margin:8px 0 14px'>Приложение сейчас не достаёт до сервера. Бот при этом может работать — пиши туда, ответ придёт в чат.</p><button class='btn' id='gobot'>💬 Писать в бота</button><p class='mut sm' style='margin-top:10px'>Проверю связь сам, когда вернёшься.</p></div>";var h=thread.length?thread.map(msgHTML).join(""):"<div class='empty'><div class='lab cy'>"+(netOK()?"ядро на связи":"ядро ждёт")+"</div><div class='h' style='margin-top:8px'>Пиши — разложу<br>по шагам</div><p class='mut sm' style='margin-top:8px'>"+(netOK()?"Задача, фото тетради или голосом.":inside&&API?"Подключаюсь к Ядру…":"Ядро сейчас вне приложения — вопрос отправлю в бот.")+"</p></div>";
+ return h+(thinking?"<div class='m ai' id='strm'>"+(STRM?md(STRM):"<span class='skel'></span><span class='skel w2'></span><span class='skel w3'></span><div class='typing'><i></i><i></i><i></i><span>Ядро думает…</span></div>")+"</div>":"")}
 function netTxt(){return NET.st==="on"?"онлайн":NET.st==="wait"?"связь…":"через бот"}
 V.chat=function(){var qs=thread.length?"":"<div class='qs'><button class='chip' data-q='photo'>"+ic("cam")+"Реши фото</button><button class='chip' data-q='easy'>"+ic("bulb")+"Объясни проще</button><button class='chip' data-q='hw'>"+ic("check")+"Проверь домашку</button></div>";
  return"<div class='chat'><div class='ch'><span class='t'>Чат</span><span class='pill'>🔥 "+st()+"</span><span class='net "+NET.st+"' id='net'><i></i><span>"+netTxt()+"</span></span><span style='margin-left:auto' class='lab mu' id='lft'>"+(prem()?"⚡ до 200":"⚡ "+left())+"</span><button class='ib' id='more' aria-label='Ещё'>"+ic("dots")+"</button></div>"+
  "<div id='log'>"+logHTML()+"</div>"+qs+
  "<div class='comp'><button class='ib' id='att' aria-label='Фото'>"+ic("clip")+"</button><textarea id='q' rows='1' placeholder='Сообщение Ядру…' maxlength='4000'></textarea><button class='ib' id='send' aria-label='Отправить'>"+ic("mic")+"</button></div></div>"};
 function drawLog(){var l=$("log");if(!l)return;l.innerHTML=logHTML();l.scrollTop=l.scrollHeight;var qs=document.querySelector(".qs");if(qs&&thread.length)qs.remove()}
-function paintNet(){var n=$("net");if(n){n.className="net "+NET.st;n.lastChild.textContent=netTxt()}var f=$("lft");if(f)f.textContent=prem()?"⚡ до 200":"⚡ "+left()}
+function paintNet(){if(scr==="chat"&&!thread.length&&!thinking){var lg=$("log");if(lg&&!!lg.querySelector(".offl")!==(NET.st==="off")){drawLog();var gb=$("gobot");if(gb)gb.onclick=function(){tap();go("")}}}var n=$("net");if(n){n.className="net "+NET.st;n.lastChild.textContent=netTxt()}var f=$("lft");if(f)f.textContent=prem()?"⚡ до 200":"⚡ "+left()}
 B.chat=function(){var q=$("q"),s=$("send"),l=$("log");l.scrollTop=l.scrollHeight;
  if(prefill){q.value=prefill;prefill="";setTimeout(function(){q.focus()},350)}else{var dr=LS("syn_draft");if(dr)q.value=dr}
  function grow(){q.style.height="44px";q.style.height=Math.min(140,q.scrollHeight)+"px";var g=!!q.value.trim();if(s.classList.contains("go")!==g||!s.firstChild){s.classList.toggle("go",g);s.innerHTML=ic(g?"send":"mic")}LS("syn_draft",q.value)}
@@ -338,12 +367,14 @@ B.chat=function(){var q=$("q"),s=$("send"),l=$("log");l.scrollTop=l.scrollHeight
  var ly=l.scrollTop;l.onscroll=function(){var y=l.scrollTop;if(Math.abs(y-ly)<14)return;if(y<ly)document.body.classList.add("nonav");else if(l.scrollHeight-y-l.clientHeight<60&&document.activeElement!==q)document.body.classList.remove("nonav");ly=y};
  [].forEach.call(document.querySelectorAll("[data-q]"),function(b){b.onclick=function(){var k=b.getAttribute("data-q");tap();if(k==="photo")return pickPhoto();q.value=k==="easy"?"Объясни проще, как другу: ":"Проверь мою домашку, найди ошибки и объясни их: ";grow();q.focus()}});
  $("more").onclick=function(e){e.stopPropagation();var o=document.querySelector(".menu");if(o)return o.remove();var m=document.createElement("div");m.className="menu";
-  m.innerHTML="<button data-a='easy'>💡 Объясни проще последний ответ</button><button data-a='copy'>📋 Скопировать последний ответ</button><button data-a='bot'>💬 Открыть чат с ботом</button><button data-a='clr' style='color:var(--bad)'>🗑 Очистить на телефоне</button>";
+  m.innerHTML="<button data-a='easy'>💡 Объясни проще последний ответ</button><button data-a='copy'>📋 Скопировать последний ответ</button><button data-a='save'>📌 В шпаргалки</button><button data-a='bot'>💬 Открыть чат с ботом</button><button data-a='clr' style='color:var(--bad)'>🗑 Очистить на телефоне</button>";
   document.querySelector(".chat").appendChild(m);m.onclick=function(ev){var a=ev.target.closest("button");if(!a)return;m.remove();var k=a.getAttribute("data-a");
    if(k==="easy"){if(!lastAI())return toast("Сначала спроси что-нибудь");sendText("Объясни проще, как другу из 5 класса, свой последний ответ. Коротко и с примером.","💡 Объясни проще")}
    else if(k==="copy"){var la=lastAI();if(la)copyText(la,"Скопировал 📋");else toast("Пока нечего копировать")}
+   else if(k==="save"){var la2=lastAI();if(!la2)return toast("Пока нечего сохранять");var nn=J("syn_notes",[]);nn.push({t:la2.slice(0,4000),d:dk()});JS("syn_notes",nn.slice(-50));tap("good");toast("Сохранил в шпаргалки 📌")}
    else if(k==="bot")go("");else if(k==="clr"){thread=[];save();render(0);toast("Чат на телефоне очищен")}};
   setTimeout(function(){document.addEventListener("click",function f(){m.remove();document.removeEventListener("click",f)})},0)};
+ var gb=$("gobot");if(gb)gb.onclick=function(){tap();go("")};
  if(!histDone)loadHistory()};
 function lastAI(){for(var i=thread.length-1;i>=0;i--)if(!thread[i].me&&!thread[i].note)return thread[i].answer||thread[i].t||"";return""}
 function copyText(t,msg,cb){function fb(){try{var a=document.createElement("textarea");a.value=t;a.style.position="fixed";a.style.opacity="0";document.body.appendChild(a);a.select();var r=document.execCommand("copy");a.remove();return r}catch(e){return false}}
@@ -395,13 +426,13 @@ function recDone(){var sec=Math.round((Date.now()-REC.t0)/1000);if(sec<1)return 
 function quest(t,c,g){var d=c>=g;return"<div class='row' style='margin-top:12px'><span style='flex:1;font-size:14px"+(d?";color:var(--mut);text-decoration:line-through":"")+"'>"+t+"</span><span class='lab "+(d?"cy":"mu")+"'>"+(d?"✓":c+"/"+g)+"</span></div>"}
 V.loot=function(){var S=achState(),n=S.filter(function(s){return s.on}).length,near=S.filter(function(s){return!s.on}).sort(function(a,b){return b.c/b.g-a.c/a.g})[0],nc=Number(data.nc)||0,s=st(),h="<h1>Лут</h1><p class='mut'>Награды за дело. Ничего не сгорает.</p>";
  h+="<div class='box gd'><div class='row'><div style='font-size:40px;line-height:1'>🎁</div><div style='flex:1'><div class='lab gd'>сундук серии</div><div class='mid' style='margin-top:4px'>"+(nc?(nc-s>0?"через "+(nc-s)+" "+dayW(nc-s):"готов в боте"):"на 3-й день")+"</div></div></div>"+(nc?"<div style='margin-top:12px'>"+bar(s/nc)+"</div>":"")+"<p class='mut sm' style='margin-top:8px'>Открывается в боте, когда серия дойдёт.</p></div>";
- h+="<div class='g2' style='margin-top:12px'><button class='tile cy' data-go='ach'><span class='em'>🏅</span><b>Ачивки</b><span class='mut sm'>"+n+" / "+S.length+"</span></button><button class='tile mg' data-go='wheel'><span class='em'>🎡</span><b>Колесо</b><span class='mut sm'>"+(LS("syn_wh")===dk()?"завтра снова":"1 раз в день")+"</span></button></div>";
+ h+="<div class='g2' style='margin-top:12px'><button class='tile cy' data-go='ach'><span class='em'>🏅</span><b>Ачивки</b><span class='mut sm'>"+n+" / "+S.length+"</span></button><button class='tile mg' data-go='wheel'><span class='em'>🎁</span><b>Сюрприз дня</b><span class='mut sm'>"+(LS("syn_wh")===dk()?"завтра снова":"1 раз в день")+"</span></button></div>";
  if(near)h+="<button class='li' data-go='ach'><span class='ic' style='font-size:20px;border-color:"+RN[near.a[4]][1]+"'>"+near.a[1]+"</span><span style='flex:1'><b>Ближе всего: "+esc(near.a[2])+"</b><span class='s'>"+esc(near.a[3])+" · "+near.c+"/"+near.g+"</span><span style='display:block;margin-top:6px'>"+bar(near.c/near.g)+"</span></span></button>";
  h+="<div class='box vi'><div class='lab' style='color:var(--vi)'>квесты дня</div>"+quest("Задай 3 вопроса",Math.min(3,todayQ()),3)+quest("Разбери вопрос дня",qodDone()?1:0,1)+quest("Продли серию",(data.sd||[])[6]?1:0,1)+"</div>";
  return"<div class='scr'>"+h+"</div>"};
 var AF="all";
 V.ach=function(){var S=achState(),n=S.filter(function(s){return s.on}).length;
- return"<div class='scr'>"+back("loot","Лут")+"<h1>Ачивки</h1><p class='mut'>Открываешь делом, а не донатом. "+n+" из "+S.length+".</p><div class='row' style='gap:8px;margin-top:12px;overflow-x:auto;padding-bottom:2px'>"+
+ return"<div class='scr'>"+back("prog","Прогресс")+"<h1>Ачивки</h1><p class='mut'>Открываешь делом, а не донатом. "+n+" из "+S.length+".</p><div class='row' style='gap:8px;margin-top:12px;overflow-x:auto;padding-bottom:2px'>"+
  [["all","Все"],["on","Открытые"],["off","Закрытые"],["l","Легендарные"]].map(function(f){return"<button class='chip"+(AF===f[0]?" on":"")+"' data-f='"+f[0]+"'>"+f[1]+"</button>"}).join("")+"</div><div class='ach' id='ag'></div></div>"};
 B.ach=function(){[].forEach.call(document.querySelectorAll("[data-f]"),function(b){b.onclick=function(){AF=b.getAttribute("data-f");tap();[].forEach.call(document.querySelectorAll("[data-f]"),function(x){x.classList.toggle("on",x===b)});achGrid()}});achGrid()};
 var AGT=0;
@@ -413,19 +444,37 @@ var WHT={"Факт":["У осьминога три сердца и голуба�
 V.wheel=function(){var done=LS("syn_wh")===dk(),res=J("syn_whr",null),seg="",n=WH.length;
  for(var i=0;i<n;i++){var a0=i/n*6.2832-1.5708,a1=(i+1)/n*6.2832-1.5708,am=(a0+a1)/2,tx=(100+60*Math.cos(am)).toFixed(1),ty=(100+60*Math.sin(am)).toFixed(1);
   seg+="<path d='M100 100L"+(100+96*Math.cos(a0)).toFixed(1)+" "+(100+96*Math.sin(a0)).toFixed(1)+"A96 96 0 0 1 "+(100+96*Math.cos(a1)).toFixed(1)+" "+(100+96*Math.sin(a1)).toFixed(1)+"Z' fill='"+WH[i][1]+"' fill-opacity='.16' stroke='"+WH[i][1]+"' stroke-width='2'/><text x='"+tx+"' y='"+ty+"' fill='#fff' font-size='10' font-family='JB,monospace' text-anchor='middle' dominant-baseline='middle' transform='rotate("+(am*57.3+90).toFixed(0)+" "+tx+" "+ty+")'>"+WH[i][0].toUpperCase()+"</text>"}
- return"<div class='scr'>"+back("loot","Лут")+"<h1>Колесо</h1><p class='mut'>Раз в день — штука для мозга. Без ставок и без доната.</p><div class='wheel'><svg id='whs' viewBox='0 0 200 200'>"+seg+"<circle cx='100' cy='100' r='16' fill='#06070d' stroke='#ffcf5a' stroke-width='2'/></svg></div>"+
- (done&&res?"<div class='box'><div class='lab cy'>"+esc(res[0])+"</div><p style='margin-top:6px'>"+esc(res[1])+"</p></div><p class='mut sm' style='text-align:center;margin-top:10px'>Следующий раз — завтра</p>":"<button class='btn' id='spin' style='margin-top:12px'>Крутить</button>")+"</div>"};
+ return"<div class='scr'>"+back("prog","Прогресс")+"<h1>Сюрприз дня</h1><p class='mut'>Раз в день — штука для мозга. Без ставок, без доната, без казино.</p><div class='wheel'><svg id='whs' viewBox='0 0 200 200'>"+seg+"<circle cx='100' cy='100' r='16' fill='#06070d' stroke='#ffcf5a' stroke-width='2'/></svg></div>"+
+ (done&&res?"<div class='box'><div class='lab cy'>"+esc(res[0])+"</div><p style='margin-top:6px'>"+esc(res[1])+"</p></div><p class='mut sm' style='text-align:center;margin-top:10px'>Следующий раз — завтра</p>":"<button class='btn' id='spin' style='margin-top:12px'>Открыть</button>")+"</div>"};
 B.wheel=function(){var b=$("spin");if(!b)return;b.onclick=function(){b.disabled=true;tap("mid");var i=Math.floor(Math.random()*WH.length),k=WH[i][0],arr=WHT[k],txt=arr[Math.floor(Math.random()*arr.length)],deg=1800-(i+.5)*(360/WH.length);
  $("whs").style.transform="rotate("+deg+"deg)";setTimeout(function(){LS("syn_wh",dk());JS("syn_whr",[k,txt]);tap("good");beep(1);if(scr==="wheel")render(0)},lowFx()?60:3300)}};
 /* PROFILE */
 function li(go,i,t,s,act){return"<button class='li' "+(act?"id='"+act+"'":"data-go='"+go+"'")+"><span class='ic'>"+ic(i)+"</span><span><b>"+t+"</b><span class='s'>"+esc(s)+"</span></span><span class='ar'>›</span></button>"}
 function pu(){return data.pu?new Date(data.pu*1000).toLocaleDateString("ru-RU"):""}
 
-V.mem=function(){var mf=Array.isArray(data.mf)?data.mf:[],h="<button class='back' data-go='me'>"+ic("back")+" Назад</button><h1>Что Ядро помнит</h1><p class='mut'>Те же заметки, что в боте. Стереть — в Пульте бота.</p>";
+V.mem=function(){var mf=Array.isArray(data.mf)?data.mf:[],h="<button class='back' data-go='me'>"+ic("back")+" Назад</button><h1>Что Ядро помнит</h1><p class='mut'>Те же заметки, что в боте. Стереть — в боте: 🧠 Память.</p>";
  if(!mf.length)h+="<div class='box'><p class='mut'>Пока пусто. Напиши в боте «запомни: …»</p></div>";
  else h+="<div class='box'>"+mf.map(function(f,i){return"<div class='li' style='margin:0'><span class='ic'>"+(i+1)+"</span><span style='flex:1'><b>"+esc(f)+"</b></span></div>"}).join("")+"</div>";
+ h+="<button class='btn ol cy' id='memcp' style='margin-top:10px'>"+ic("dl")+"Скопировать всё</button>";
  return"<div class='scr'>"+h+"</div>"};
-B.mem=function(){};
+B.mem=function(){var c=$("memcp");if(c)c.onclick=function(){var mf=Array.isArray(data.mf)?data.mf:[];if(!mf.length)return toast("Пока нечего копировать");copyText("Что Ядро обо мне помнит:\n"+mf.map(function(f,i){return(i+1)+". "+f}).join("\n"),"Память скопирована 📋")}};
+var HIST=null;
+function days(){return prem()||data.p==="trial"?7:1}
+V.hist=function(){var h=back("me","Профиль")+"<h1>Прошлые диалоги</h1><p class='mut'>"+(days()>1?"Последние 7 дней.":"Последние сутки. В Premium — 7 дней.")+"</p>";
+ if(HIST===null){h+="<div class='box'><span class='skel'></span><span class='skel w2'></span><span class='skel w3'></span></div>";return"<div class='scr'>"+h+"</div>"}
+ var lim=Date.now()-days()*864e5,it=HIST.filter(function(m){return(m.ts||0)>=lim}),by={},ord=[];
+ it.forEach(function(m){var d=new Date((m.ts||0)+108e5).toISOString().slice(0,10);if(!by[d]){by[d]=[];ord.push(d)}by[d].push(m)});
+ if(!ord.length)h+="<div class='box'><p class='mut'>Пусто. Спроси что-нибудь в чате.</p></div>";
+ ord.reverse().forEach(function(d){h+="<div class='box dim'><div class='lab cy'>"+d.split("-").reverse().join(".")+"</div>"+by[d].filter(function(m){return m.me}).slice(-12).map(function(m){return"<button class='li' data-ask='"+esc(String(m.t||"").slice(0,300))+"'><span style='flex:1;min-width:0'><b style='font-weight:500'>"+esc(String(m.t||"").slice(0,90))+"</b><span class='s'>"+tm(m.ts)+" · спросить снова</span></span></button>"}).join("")+"</div>"});
+ return"<div class='scr'>"+h+"</div>"};
+B.hist=function(){if(HIST===null){var loc=thread.slice();(async function(){var it=[];try{if(netOK()&&inside){var r=await call("/app/history",{});if(r&&r.ok&&Array.isArray(r.items))it=r.items.map(function(x){return{me:x.r==="user"?1:0,t:String(x.c||""),ts:(Number(x.t)||0)*1000}})}}catch(e){}
+ HIST=it.length?it:loc;if(scr==="hist")render(0)})();return}
+ [].forEach.call(document.querySelectorAll("[data-ask]"),function(b){b.onclick=function(){openAsk(b.getAttribute("data-ask"))}})};
+V.notes=function(){var n=J("syn_notes",[]),h=back("me","Профиль")+"<h1>Шпаргалки</h1><p class='mut'>Ответы, которые ты сохранил. Живут на телефоне.</p>";
+ if(!n.length)h+="<div class='box'><p class='mut'>Пусто. В чате: ⋯ → «📌 В шпаргалки».</p></div>";
+ n.slice().reverse().forEach(function(x,i){h+="<div class='box'><div class='lab mu'>"+esc(x.d||"")+"</div><div class='m ai' style='max-width:100%;margin-top:6px'>"+md(x.t)+"</div><button class='sv' data-del='"+(n.length-1-i)+"'>Удалить</button></div>"});
+ return"<div class='scr'>"+h+"</div>"};
+B.notes=function(){[].forEach.call(document.querySelectorAll("[data-del]"),function(b){b.onclick=function(){var n=J("syn_notes",[]);n.splice(Number(b.getAttribute("data-del")),1);JS("syn_notes",n);tap();render(0)}})};
 
 V.me=function(){var wk=Array.isArray(data.wk)?data.wk:null,mx=1,tot=0,h="";if(wk)wk.forEach(function(v){v=Number(v)||0;tot+=v;if(v>mx)mx=v});
  h+="<div class='box "+(prem()?"gd":"")+"'><div class='row'><div class='av'>"+esc(String(data.n||"?").slice(0,1).toUpperCase())+"</div><div style='min-width:0'><div class='mid' style='overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>"+esc(data.n||"Ты")+"</div><div class='lab "+(prem()?"gd":"cy")+"' style='margin-top:4px'>"+esc(data.rk||"")+(prem()?" · premium":"")+"</div></div></div>"+
@@ -435,10 +484,10 @@ V.me=function(){var wk=Array.isArray(data.wk)?data.wk:null,mx=1,tot=0,h="";if(wk
  h+="<div class='box dim'><div class='row'><div class='lab cy'>твоя неделя</div><span class='lab mu' style='margin-left:auto'>"+(wk?(tot+" вопр."):(Number(data.tr)?"из бота · "+Number(data.tr)+" всего":"пока тихо"))+"</span></div>";
  if(wk){h+="<div class='wk'>";for(var i=0;i<7;i++){var v=Number(wk[i])||0;h+="<div><s class='"+(v?"":"z")+"' style='height:"+(v?Math.max(8,v/mx*100):4)+"%'></s><span>"+wdAgo(6-i)+"</span></div>"}h+="</div>"}
  else h+="<p class='mut sm' style='margin-top:8px'>Неделя подтянется с сервера, когда Ядро на связи.</p>";
- h+="</div>"+li("ach","award","Ачивки",(Number(data.ag)||achState().filter(function(s){return s.on}).length)+" из "+(Number(data.at)||ACH.length))+li("mem","brain","Что Ядро помнит",(Array.isArray(data.mf)?data.mf.length:0)+" заметок")+li("ref","users","Друзья","Позови — бонус получите оба")+li("","alert","Жалоба / проблема","написать владельцу","report")+li("","sw","Режим: "+(data.m==="ultra"?"Ultra":"Flash"),data.m==="ultra"?"думает глубже · переключить в боте":"быстрый · переключить в боте","mode")+li("set","gear","Настройки","звук, вибрация, анимации")+(prem()?li("prem","gem","Premium",pu()?"до "+pu():"активен"):"");
+ h+="</div>"+li("ach","award","Ачивки",(Number(data.ag)||achState().filter(function(s){return s.on}).length)+" из "+(Number(data.at)||ACH.length))+li("mem","brain","Что Ядро помнит",(Array.isArray(data.mf)?data.mf.length:0)+" заметок")+li("hist","clip","Прошлые диалоги",prem()?"7 дней":"за сутки · 7 дней в Premium")+li("notes","bulb","Шпаргалки",J("syn_notes",[]).length+" сохранено")+li("","alert","Жалоба / проблема","написать владельцу","report")+li("","sw","Режим: "+(data.m==="ultra"?"Ultra":"Flash"),data.m==="ultra"?"думает глубже · переключить в боте":"быстрый · переключить в боте","mode")+li("set","gear","Настройки","звук, вибрация, анимации")+(prem()?li("prem","gem","Premium",pu()?"до "+pu():"активен"):"");
  return"<div class='scr'>"+h+"</div>"};
 B.me=function(){$("png")&&($("png").onclick=savePNG);$("shr")&&($("shr").onclick=sharePNG);var md=$("mode");if(md)md.onclick=function(){tap();go(data.m==="ultra"?"flash":"ultra")};var rp=$("report");if(rp)rp.onclick=function(){tap();go("report")}};
-V.ref=function(){return"<div class='scr'>"+back("me","Профиль")+"<h1>Друзья</h1><p class='mut'>Друг заходит по твоей ссылке и задаёт первый вопрос — бонус получаете оба.</p><div class='box'><div class='g2'><div><div class='lab mu'>пришли</div><div class='big'>"+(Number(data.r)||0)+"</div></div><div><div class='lab mu'>ждут</div><div class='big' style='color:var(--mut)'>"+(Number(data.w)||0)+"</div></div></div>"+(data.nx&&data.nx[0]?"<p class='sm' style='margin-top:10px'>Следующая награда: <b>"+esc(data.nx[0])+"</b> — ещё "+esc(data.nx[1])+"</p>":"")+"</div><button class='btn' id='rs' style='margin-top:12px'>"+ic("share")+"Позвать друга</button><button class='li' id='rc'><span class='ic'>"+ic("clip")+"</span><span style='min-width:0'><b>Скопировать ссылку</b><span class='s' style='overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>"+esc(data.lk||"")+"</span></span></button></div>"};
+V.ref=function(){return"<div class='scr'>"+"<h1>Друзья</h1><p class='mut'>Друг заходит по твоей ссылке и задаёт первый вопрос — бонус получаете оба.</p><div class='box'><div class='g2'><div><div class='lab mu'>пришли</div><div class='big'>"+(Number(data.r)||0)+"</div></div><div><div class='lab mu'>ждут</div><div class='big' style='color:var(--mut)'>"+(Number(data.w)||0)+"</div></div></div>"+(data.nx&&data.nx[0]?"<p class='sm' style='margin-top:10px'>Следующая награда: <b>"+esc(data.nx[0])+"</b> — ещё "+esc(data.nx[1])+"</p>":"")+"</div><button class='btn' id='rs' style='margin-top:12px'>"+ic("share")+"Позвать друга</button><button class='li' id='rc'><span class='ic'>"+ic("clip")+"</span><span style='min-width:0'><b>Скопировать ссылку</b><span class='s' style='overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>"+esc(data.lk||"")+"</span></span></button></div>"};
 B.ref=function(){$("rs").onclick=function(){tap();shareLink()};$("rc").onclick=function(){copyText(data.lk||"https://t.me/"+BOT,"Ссылка в буфере 🔗")}};
 function shareLink(){var u="https://t.me/share/url?url="+encodeURIComponent(data.lk||"https://t.me/"+BOT)+"&text="+encodeURIComponent("Залетай в Synapse — разбирает домашку по шагам и не душнит ⚡");try{if(inside&&tg.openTelegramLink)return tg.openTelegramLink(u)}catch(e){}window.open(u,"_blank")}
 V.set=function(){LS("syn_cfg","1");var fx=fxMode();
@@ -498,6 +547,8 @@ async function refreshMe(){if(!(API&&inside&&netOK()))return;try{var r=await cal
 try{if(ver("6.1"))tg.BackButton.onClick(function(){if(PARENT[scr])setTab(PARENT[scr],-1)})}catch(e){}
 document.addEventListener("visibilitychange",function(){if(!document.hidden&&API&&inside&&!netOK())ping()});
 try{var st0=new URLSearchParams(location.search).get("tab");if(st0&&V[st0])scr=st0}catch(e){}
+function theme(){try{var light=inside&&tg.colorScheme==="light";document.documentElement.classList.toggle("light",!!light)}catch(e){}}
+theme();try{if(inside)tg.onEvent("themeChanged",function(){theme()})}catch(e){}
 render(0);checkAch();ping();
 window.__syn={setTab:setTab,scr:function(){return scr},botSay:botSay,push:push};
 })();
