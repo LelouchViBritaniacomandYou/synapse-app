@@ -198,10 +198,13 @@ var IC={
  mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',send:'<path d="M5 12h14M13 6l6 6-6 6"/>',
  dots:'<circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/>',
  check:'<path d="m5 12 5 5 9-10"/>',bulb:'<path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/>',
- sw:'<path d="M4 7h13l-3-3M20 17H7l3 3"/>',back:'<path d="M15 5l-7 7 7 7"/>'};
+ sw:'<path d="M4 7h13l-3-3M20 17H7l3 3"/>',alert:'<path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h16.9a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
+ brain:'<path d="M12 5a4 4 0 0 0-3 6.7V18h6v-6.3A4 4 0 0 0 12 5zM8 10a3 3 0 0 1 0-6 3.5 3.5 0 0 0 0 7zm8 0a3.5 3.5 0 0 0 0-7 3 3 0 0 1 0 6z"/>',
+ back:'<path d="M15 5l-7 7 7 7"/>'};
 function ic(n){return'<svg viewBox="0 0 24 24">'+(IC[n]||"")+'</svg>'}
 function readParam(){var t=new URLSearchParams(location.search).get("d")||"";if(!t)return null;t=t.replace(/-/g,"+").replace(/_/g,"/");while(t.length%4)t+="=";var b=atob(t),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return JSON.parse(new TextDecoder().decode(u))}
-var demo={v:1,n:"Нео",p:"trial",pu:0,u:4,l:30,ux:4,s:8,sd:[1,1,1,1,1,1,0],wk:[3,5,2,6,4,7,1],xp:450,ri:2,rk:"🌀 Контур",xn:[150,"⚡ Ядро"],nc:14,m:"flash",role:"universal",r:2,w:1,nx:["3 дня Premium",1],lk:"https://t.me/core_synapse_bot?start=ref_demo",sp:0,b:"core_synapse_bot",
+var demo={v:1,n:"Нео",p:"trial",pu:0,u:4,l:30,ux:4,s:8,sd:[1,1,1,1,1,1,0],wk:[3,5,2,6,4,7,1],xp:450,ri:2,rk:"🌀 Контур",xn:[150,"⚡ Ядро"],nc:14,m:"flash",role:"universal",r:2,w:1,nx:["3 дня Premium",1],lk:"https://t.me/core_synapse_bot?start=ref_demo",sp:0,b:"core_synapse_bot",tr:24,ag:1,at:27,mf:["Любит: футбол","Класс: 9"],
+ ac:[["first_step","🌱","Первый вопрос","Просто задай первый вопрос",0,1],["questions_100","💬","100 вопросов","Задай ядру 100 вопросов",0,0],["streak_7","🔥","Неделя серии","Заходи 7 дней подряд",0,1],["premium_1","💎","Premium","Включи любой Premium",0,0],["night_owl","🌙","Ночная смена","Спроси между 2 и 5 ночи",0,0]],
  pr:[["week","Premium на неделю",90],["month","Premium на месяц",300],["year","Premium на год",2000]]};
 var live=null;if(inside){try{live=readParam()}catch(e){live=null}}
 try{var pd=new URLSearchParams(location.search).get("demo");if(!inside&&pd==="prem"){demo.p="premium";demo.pu=Math.floor(Date.now()/1000)+20*86400}}catch(e){}
@@ -239,17 +242,29 @@ function xp(){return Number(data.xp)||0}
 var QOD=["Почему небо синее, а закат красный?","Как быстро посчитать 15% от любого числа в уме?","Почему минус на минус даёт плюс?","Чем вирус отличается от бактерии?","Как GPS узнаёт, где ты?","Почему лёд не тонет?","Откуда берётся эхо?","Как работает прививка?","Почему у Луны есть фазы?","Почему самолёт не падает?","Как растения едят солнечный свет?","Что такое квадратный корень на пальцах?","Почему вода в море солёная?","Как устроена молния?","Как работает интернет за 1 минуту?","Почему кошки падают на лапы?","Что такое ДНК простыми словами?","Почему на 0 делить нельзя?","Зачем нужны дроби, если есть проценты?","Почему Земля круглая?","Как работает память человека?"];
 function qod(){return QOD[Math.floor(msk().getTime()/864e5)%QOD.length]}
 function qodDone(){return LS("syn_qod")===dk()}
-var ACH=[["first","🚀","Первый шаг","Задай первый вопрос","c",function(){return[qn(),1]}],["q10","💬","Болтун","10 вопросов","c",function(){return[qn(),10]}],["q50","🧠","Мозговой штурм","50 вопросов","r",function(){return[qn(),50]}],["q200","🏛️","Академик","200 вопросов","e",function(){return[qn(),200]}],["q1000","🪐","Профессор","1000 вопросов","l",function(){return[qn(),1000]}],
-["s3","🔥","Разогрев","Серия 3 дня","c",function(){return[st(),3]}],["s7","⚡","Неделя огня","Серия 7 дней","r",function(){return[st(),7]}],["s30","🌋","Вулкан","Серия 30 дней","e",function(){return[st(),30]}],["s100","☄️","Легенда","Серия 100 дней","l",function(){return[st(),100]}],
-["x100","✨","Искра","100 XP","c",function(){return[xp(),100]}],["x1000","💫","Разряд","1000 XP","r",function(){return[xp(),1000]}],["x5000","🌟","Сверхновая","5000 XP","e",function(){return[xp(),5000]}],
-["qd1","❓","Любопытный","Разбери вопрос дня","c",function(){return[Number(LS("syn_qodn"))||0,1]}],["qd10","🔍","Исследователь","10 вопросов дня","r",function(){return[Number(LS("syn_qodn"))||0,10]}],
-["ph","📸","Глаз","Разбери фото","c",function(){return[Number(LS("syn_ph"))||0,1]}],["owl","🌙","Сова","Вопрос после полуночи","r",function(){return[LS("syn_night")?1:0,1]}],
-["cfg","⚙️","Под себя","Загляни в настройки","c",function(){return[LS("syn_cfg")?1:0,1]}],["fr","🤝","Командный","Позови друга","r",function(){return[Number(data.r)||0,1]}],["prm","👑","Хозяин Ядра","Premium","l",function(){return[prem()?1:0,1]}]];
-var RN={c:["обычная","#9aa3c0"],r:["редкая","#19f0ff"],e:["эпическая","#c46bff"],l:["легендарная","#ffcf5a"]};
-function achState(){return ACH.map(function(a){var p=a[5]();return{a:a,c:Math.min(p[0],p[1]),g:p[1],on:p[0]>=p[1]}})}
+/* v11: один каталог с ботом — data.ac с сервера; прогресс по data.tr / streak / xp */
+var RN={c:["обычная","#9aa3c0"],r:["редкая","#19f0ff"],e:["эпическая","#c46bff"],l:["легендарная","#ffcf5a"],s:["секрет","#ff5ac8"]};
+function rareOf(code,secret){if(secret)return"s";if(/1000|forever|legend|сингул/i.test(code))return"l";if(/30|100|premium|duel|quiz_perfect/i.test(code))return"e";if(/10|14|night|voice|photo/i.test(code))return"r";return"c"}
+function buildACH(){var ac=Array.isArray(data.ac)?data.ac:[],tr=Number(data.tr)||0,s=st(),x=xp(),r=Number(data.r)||0;
+ if(ac.length){return ac.map(function(row){var code=row[0],emo=row[1],title=row[2],hint=row[3],secret=+row[4],on=+row[5];
+  var goal=1,cur=on?1:0;
+  if(/^questions_/.test(code)){goal=parseInt(code.split("_")[1],10)||1;cur=Math.min(tr,goal);on=tr>=goal?1:on}
+  else if(/^streak_/.test(code)){goal=parseInt(code.split("_")[1],10)||1;cur=Math.min(s,goal);on=s>=goal?1:on}
+  else if(code==="first_step"){goal=1;cur=tr>=1?1:0;on=cur}
+  else if(code==="refs_3"){goal=3;cur=Math.min(r,3);on=r>=3?1:on}
+  else if(code==="refs_10"){goal=10;cur=Math.min(r,10);on=r>=10?1:on}
+  else if(code==="premium_1"){goal=1;cur=prem()?1:0;on=cur}
+  return[code,emo,title,hint,rareOf(code,secret),function(){return[cur,goal]},!!on,!!secret]})}
+ /* fallback demo catalog (offline preview) */
+ return[["first_step","🌱","Первый вопрос","Просто задай первый вопрос","c",function(){return[tr>=1?1:0,1]},tr>=1,false],
+  ["questions_100","💬","100 вопросов","Задай ядру 100 вопросов","e",function(){return[Math.min(tr,100),100]},tr>=100,false],
+  ["streak_7","🔥","Неделя серии","Заходи 7 дней подряд","r",function(){return[Math.min(s,7),7]},s>=7,false],
+  ["premium_1","💎","Premium","Включи любой Premium","l",function(){return[prem()?1:0,1]},prem(),false]]}
+var ACH=buildACH();
+function achState(){ACH=buildACH();return ACH.map(function(a){var p=a[5]();return{a:a,c:Math.min(p[0],p[1]),g:p[1],on:!!a[6]||p[0]>=p[1]}})}
 function checkAch(){var on=achState().filter(function(s){return s.on}).map(function(s){return s.a[0]}),got=J("syn_ach",null);JS("syn_ach",on);if(!got)return;
- var nw=on.filter(function(i){return got.indexOf(i)<0});nw.slice(0,2).forEach(function(id,k){var a=ACH.filter(function(x){return x[0]===id})[0];setTimeout(function(){toast(a[1]+" Ачивка: "+a[2]);tap("good");beep(1)},600+k*2400)})}
-var ORDER=["home","chat","loot","me"],NAV={home:"home",chat:"chat",loot:"loot",ach:"loot",wheel:"loot",me:"me",prem:"me",set:"me",ref:"me"},PARENT={ach:"loot",wheel:"loot",prem:"me",set:"me",ref:"me"};
+ var nw=on.filter(function(i){return got.indexOf(i)<0});nw.slice(0,2).forEach(function(id,k){var a=ACH.filter(function(x){return x[0]===id})[0];if(!a)return;setTimeout(function(){toast(a[1]+" Ачивка: "+a[2]);tap("good");beep(1)},600+k*2400)})}
+var ORDER=["home","chat","loot","me"],NAV={home:"home",chat:"chat",loot:"loot",ach:"loot",wheel:"loot",me:"me",prem:"me",set:"me",ref:"me",mem:"me"},PARENT={ach:"loot",wheel:"loot",prem:"me",set:"me",ref:"me",mem:"me"};
 var scr="home",V={},B={};
 function setTab(t,dir){if(!V[t])return;var a=ORDER.indexOf(NAV[t]),b=ORDER.indexOf(NAV[scr]);if(dir==null)dir=a===b?(PARENT[t]?1:-1):a-b;scr=t;tap("sel");render(dir)}
 function render(dir){var pl=$("plan");pl.textContent=prem()?"PREMIUM":data.p==="trial"?"TRIAL":"FREE";pl.className="plan"+(prem()?" pr":"");
@@ -405,17 +420,24 @@ B.wheel=function(){var b=$("spin");if(!b)return;b.onclick=function(){b.disabled=
 /* PROFILE */
 function li(go,i,t,s,act){return"<button class='li' "+(act?"id='"+act+"'":"data-go='"+go+"'")+"><span class='ic'>"+ic(i)+"</span><span><b>"+t+"</b><span class='s'>"+esc(s)+"</span></span><span class='ar'>›</span></button>"}
 function pu(){return data.pu?new Date(data.pu*1000).toLocaleDateString("ru-RU"):""}
+
+V.mem=function(){var mf=Array.isArray(data.mf)?data.mf:[],h="<button class='back' data-go='me'>"+ic("back")+" Назад</button><h1>Что Ядро помнит</h1><p class='mut'>Те же заметки, что в боте. Стереть — в Пульте бота.</p>";
+ if(!mf.length)h+="<div class='box'><p class='mut'>Пока пусто. Напиши в боте «запомни: …»</p></div>";
+ else h+="<div class='box'>"+mf.map(function(f,i){return"<div class='li' style='margin:0'><span class='ic'>"+(i+1)+"</span><span style='flex:1'><b>"+esc(f)+"</b></span></div>"}).join("")+"</div>";
+ return"<div class='scr'>"+h+"</div>"};
+B.mem=function(){};
+
 V.me=function(){var wk=Array.isArray(data.wk)?data.wk:null,mx=1,tot=0,h="";if(wk)wk.forEach(function(v){v=Number(v)||0;tot+=v;if(v>mx)mx=v});
  h+="<div class='box "+(prem()?"gd":"")+"'><div class='row'><div class='av'>"+esc(String(data.n||"?").slice(0,1).toUpperCase())+"</div><div style='min-width:0'><div class='mid' style='overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>"+esc(data.n||"Ты")+"</div><div class='lab "+(prem()?"gd":"cy")+"' style='margin-top:4px'>"+esc(data.rk||"")+(prem()?" · premium":"")+"</div></div></div>"+
  "<div class='g3' style='margin-top:14px'><div><div class='lab mu'>серия</div><div class='mid'>🔥"+st()+"</div></div><div><div class='lab mu'>xp</div><div class='mid'>"+xp()+"</div></div><div><div class='lab mu'>друзья</div><div class='mid'>"+(Number(data.r)||0)+"</div></div></div></div>";
  h+="<div class='g2' style='margin-top:12px'><button class='btn ol cy' id='png'>"+ic("dl")+"Сохранить PNG</button><button class='btn ol' id='shr'>"+ic("share")+"Поделиться</button></div>";
  if(!prem())h+="<button class='btn gd' data-go='prem' style='margin-top:10px'>"+ic("gem")+"Premium · до 200 ⚡</button>";
- h+="<div class='box dim'><div class='row'><div class='lab cy'>твоя неделя</div><span class='lab mu' style='margin-left:auto'>"+(wk?tot+" вопр.":"")+"</span></div>";
+ h+="<div class='box dim'><div class='row'><div class='lab cy'>твоя неделя</div><span class='lab mu' style='margin-left:auto'>"+(wk?(tot+" вопр."):(Number(data.tr)?"из бота · "+Number(data.tr)+" всего":"пока тихо"))+"</span></div>";
  if(wk){h+="<div class='wk'>";for(var i=0;i<7;i++){var v=Number(wk[i])||0;h+="<div><s class='"+(v?"":"z")+"' style='height:"+(v?Math.max(8,v/mx*100):4)+"%'></s><span>"+wdAgo(6-i)+"</span></div>"}h+="</div>"}
  else h+="<p class='mut sm' style='margin-top:8px'>Неделя подтянется с сервера, когда Ядро на связи.</p>";
- h+="</div>"+li("ach","award","Ачивки",achState().filter(function(s){return s.on}).length+" из "+ACH.length)+li("ref","users","Друзья","Позови — бонус получите оба")+li("","sw","Режим: "+(data.m==="ultra"?"Ultra":"Flash"),data.m==="ultra"?"думает глубже · переключить в боте":"быстрый · переключить в боте","mode")+li("set","gear","Настройки","звук, вибрация, анимации")+(prem()?li("prem","gem","Premium",pu()?"до "+pu():"активен"):"");
+ h+="</div>"+li("ach","award","Ачивки",(Number(data.ag)||achState().filter(function(s){return s.on}).length)+" из "+(Number(data.at)||ACH.length))+li("mem","brain","Что Ядро помнит",(Array.isArray(data.mf)?data.mf.length:0)+" заметок")+li("ref","users","Друзья","Позови — бонус получите оба")+li("","alert","Жалоба / проблема","написать владельцу","report")+li("","sw","Режим: "+(data.m==="ultra"?"Ultra":"Flash"),data.m==="ultra"?"думает глубже · переключить в боте":"быстрый · переключить в боте","mode")+li("set","gear","Настройки","звук, вибрация, анимации")+(prem()?li("prem","gem","Premium",pu()?"до "+pu():"активен"):"");
  return"<div class='scr'>"+h+"</div>"};
-B.me=function(){$("png").onclick=savePNG;$("shr").onclick=sharePNG;$("mode").onclick=function(){tap();go(data.m==="ultra"?"flash":"ultra")}};
+B.me=function(){$("png")&&($("png").onclick=savePNG);$("shr")&&($("shr").onclick=sharePNG);var md=$("mode");if(md)md.onclick=function(){tap();go(data.m==="ultra"?"flash":"ultra")};var rp=$("report");if(rp)rp.onclick=function(){tap();go("report")}};
 V.ref=function(){return"<div class='scr'>"+back("me","Профиль")+"<h1>Друзья</h1><p class='mut'>Друг заходит по твоей ссылке и задаёт первый вопрос — бонус получаете оба.</p><div class='box'><div class='g2'><div><div class='lab mu'>пришли</div><div class='big'>"+(Number(data.r)||0)+"</div></div><div><div class='lab mu'>ждут</div><div class='big' style='color:var(--mut)'>"+(Number(data.w)||0)+"</div></div></div>"+(data.nx&&data.nx[0]?"<p class='sm' style='margin-top:10px'>Следующая награда: <b>"+esc(data.nx[0])+"</b> — ещё "+esc(data.nx[1])+"</p>":"")+"</div><button class='btn' id='rs' style='margin-top:12px'>"+ic("share")+"Позвать друга</button><button class='li' id='rc'><span class='ic'>"+ic("clip")+"</span><span style='min-width:0'><b>Скопировать ссылку</b><span class='s' style='overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>"+esc(data.lk||"")+"</span></span></button></div>"};
 B.ref=function(){$("rs").onclick=function(){tap();shareLink()};$("rc").onclick=function(){copyText(data.lk||"https://t.me/"+BOT,"Ссылка в буфере 🔗")}};
 function shareLink(){var u="https://t.me/share/url?url="+encodeURIComponent(data.lk||"https://t.me/"+BOT)+"&text="+encodeURIComponent("Залетай в Synapse — разбирает домашку по шагам и не душнит ⚡");try{if(inside&&tg.openTelegramLink)return tg.openTelegramLink(u)}catch(e){}window.open(u,"_blank")}
